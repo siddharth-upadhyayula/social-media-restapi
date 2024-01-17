@@ -2,10 +2,17 @@ package com.sidupadhyayula.socialmediarestapi.user;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
+
 public class User {
 	
 	private int id;
+	
+	@Size(min=2, message = "Name should be at least 2 characters")
 	private String name;
+	
+	@Past
 	private LocalDate birthdate;
 	
 	public User(int id, String name, LocalDate birthdate) {
