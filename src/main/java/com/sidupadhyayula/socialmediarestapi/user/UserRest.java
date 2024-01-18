@@ -3,6 +3,9 @@ package com.sidupadhyayula.socialmediarestapi.user;
 import java.net.URI;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,12 +35,28 @@ public class UserRest {
 	}
 	
 	
-	  @GetMapping("/users/{id}") public User retrieveAllUsers(@PathVariable int
-	  id){ return service.findOne(id);
+	  @GetMapping("/users/{id}") 
+	  public EntityModel<User> retrieveAllUsers(@PathVariable int
+	  id)
+	  {
+		  User user = service.findOne(id);
+		  
+		  if(user==null)
+			  throw new UserNotFoundException("id:"+id);
+		  
+		  EntityModel<User> entityModel = EntityModel.of(user);
+		  
+		  WebMvcLinkBuilder link = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+		  entityModel.add(link.withRel("all-users"));
+		  
+		  return entityModel;
 	  
 	  }
 	 
 	
+	
+
+
 	@DeleteMapping("/users/{id}")
 	public void deleteUser(@PathVariable int id){
 		service.deleteById(id);
@@ -45,7 +64,7 @@ public class UserRest {
 	}
 	
 	@PostMapping("/users")
-	public ResponseEntity<User> createUser(@Valid @RequestBody User user){
+	public ResponseEntity<User> createUser(@Valid  @RequestBody User user){
 		User savedUser = service.save(user);
 
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
