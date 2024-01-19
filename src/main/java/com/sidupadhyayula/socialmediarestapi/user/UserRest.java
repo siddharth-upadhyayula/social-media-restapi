@@ -63,6 +63,7 @@ public class UserRest {
 	
 	}
 	
+	
 	@PostMapping("/users")
 	public ResponseEntity<User> createUser(@Valid  @RequestBody User user){
 		User savedUser = service.save(user);
